@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Auto HTML Encoder - Demo</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;max-width:800px;margin:24px auto;padding:12px}
+    input, select, label, button {font-size:16px}
+    .log{white-space:pre-wrap;background:#f5f5f5;padding:10px;border-radius:6px;border:1px solid #ddd;margin-top:12px}
+  </style>
+</head>
+<body>
+  <h2>Auto HTML Encoder</h2>
+  <p>Chọn file .html - file sẽ được tự động đọc, mã hóa và tải xuống.</p>
+
+  <label>Chế độ mã hóa:
+    <select id="mode">
+      <option value="normal">Normal (encodeURIComponent)</option>
+      <option value="full">Full (escape)</option>
+    </select>
+  </label>
+  <br><br>
+  <input id="file" type="file" accept=".html,text/html">
+  <div class="log" id="log">Log: chưa có hành động.</div>
+
+  <script src="./encoder.js"></script>
+  <script>
+    const input = document.getElementById('file');
+    const log = document.getElementById('log');
+    const modeSel = document.getElementById('mode');
+
+    input.addEventListener('change', (e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f){ log.textContent = 'Không có file được chọn.'; return; }
+      log.textContent = 'Đang đọc file: ' + f.name + ' ...';
+      const mode = modeSel.value;
+      // Tự động mã hóa và tải xuống
+      window.HTMLAutoEncoder.encodeFileAndDownload(f, mode)
+        .then(() => { log.textContent = 'Đã mã hóa và tải xuống: encoded-' + f.name; })
+        .catch(err => { log.textContent = 'Lỗi: ' + err.message; });
+    });
+  </script>
+</body>
+</html>
