@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>zilc888</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Segoe UI, Tahoma, Verdana, sans-serif;background:linear-gradient(135deg,#1a1a1a,#2d2d2d);color:#fff;min-height:100vh;padding:20px}
+    .container{max-width:520px;margin:0 auto;background:rgba(255,255,255,0.04);border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(6px)}
+    .header{text-align:center;margin-bottom:14px}
+    .logo{font-size:22px;font-weight:800;color:#00ff88}
+    .domain{font-size:12px;color:#bbb;margin-top:6px}
+    .user-info{text-align:center;margin:10px 0;padding:10px;background:rgba(0,255,136,0.1);border-radius:10px;border:1px solid rgba(0,255,136,0.2)}
+    .user-id{font-weight:700;color:#00ff88;font-size:16px}
+    .balance{font-size:14px;color:#ccc;margin-top:5px}
+    .features{display:flex;gap:8px;justify-content:center;margin:14px 0}
+    .feature-item{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:10px;font-size:12px;color:#ddd}
+    .section-title{text-align:center;color:#00ff88;margin:6px 0 12px;font-size:14px}
+    .payment-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+    .method-btn{background:rgba(255,255,255,0.03);padding:10px;border-radius:10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.04)}
+    .method-btn.active{background:rgba(0,255,136,0.12);border-color:#00ff88;color:#00ff88;font-weight:700}
+    .input-group{margin-bottom:12px}
+    .input-label{display:block;color:#cfcfcf;margin-bottom:6px;font-size:13px}
+    .amount-input{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.04);text-align:center;font-size:16px;color:#fff}
+    .bank-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .bank-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);cursor:pointer;border:1px solid rgba(255,255,255,0.04)}
+    .bank-item .bank-meta{display:flex;align-items:center;gap:8px}
+    .bank-item img{width:28px;height:28px;object-fit:contain;border-radius:6px}
+    .bank-item.active{background:rgba(0,255,136,0.12);border-color:#00ff88;color:#00ff88;font-weight:700}
+    .warning{background:rgba(255,193,7,0.06);padding:10px;border-radius:10px;color:#ffd966;text-align:center;margin:12px 0;border:1px solid rgba(255,193,7,0.1)}
+    .get-info-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#00ff88,#00cc6a);font-weight:800;color:#000;cursor:pointer}
+    .get-info-btn:disabled{background:#666;cursor:not-allowed;color:#ccc}
+    .info-section{display:none;margin-top:14px;background:rgba(255,255,255,0.03);padding:16px;border-radius:12px;border:1px solid rgba(0,255,136,0.10)}
+    .info-title{text-align:center;color:#00ff88;font-weight:800;margin-bottom:10px}
+    .qr-code{width:220px;height:220px;margin:10px auto;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;padding:8px}
+    .qr-code img{max-width:100%;max-height:100%;display:block;border-radius:6px}
+    .info-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .info-item:last-child{border-bottom:none}
+    .info-label{color:#cfcfcf}
+    .info-value{font-weight:700}
+    .copy-btn{background:rgba(0,255,136,0.12);border:1px solid #00ff88;padding:6px 10px;border-radius:8px;color:#000;cursor:pointer}
+    .timer{text-align:center;color:#ff6b6b;font-weight:800;margin-top:8px}
+    .full-mode .inputs-area{display:none}
+    .full-mode .info-section{display:block}
+    #createNewBtn{width:100%;padding:12px;border-radius:10px;border:none;background:#00ff88;color:#000;font-weight:800;display:none;margin-top:10px;cursor:pointer}
+    
+    /* Popup thông báo */
+    .popup-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;opacity:0;visibility:hidden;transition:all 0.3s}
+    .popup-overlay.active{opacity:1;visibility:visible}
+    .popup{background:linear-gradient(135deg,#1a1a2e,#16213e);padding:30px;border-radius:15px;max-width:400px;width:90%;text-align:center;border:2px solid #00ff88;box-shadow:0 10px 30px rgba(0,255,136,0.3)}
+    .popup-icon{font-size:60px;margin-bottom:20px}
+    .popup-title{font-size:24px;font-weight:800;color:#00ff88;margin-bottom:15px}
+    .popup-message{font-size:16px;color:#fff;margin-bottom:25px;line-height:1.5}
+    .popup-close-btn{padding:12px 30px;background:#00ff88;border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-size:16px}
+    .popup-close-btn:hover{background:#00cc6a}
+    
+    /* Toast thông báo */
+    .toast-left{position:fixed;left:20px;top:20px;background:rgba(0,255,136,0.95);color:#000;padding:10px 14px;border-radius:10px;font-weight:700;z-index:100000;opacity:0;transition:opacity .25s}
+    
+    #offlineOverlay{position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.86);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#00ff88;z-index:99999}
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    
+    @media (max-width:480px){.container{padding:12px}.qr-code{width:180px;height:180px}.popup{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="container" id="appContainer">
+    <div class="header">
+      <div class="logo">HDT</div>
+      <div class="domain">HỆ THỐNG NẠP TIỀN TỰ ĐỘNG</div>
+    </div>
+
+    <!-- User Info -->
+    <div class="user-info">
+      <div class="user-id" id="userId">Đang tải...</div>
+      <div class="balance" id="userBalance">Số dư: 0 VND</div>
+    </div>
+
+    <div class="features">
+      <div class="feature-item">TỰ ĐỘNG</div>
+      <div class="feature-item">NHANH</div>
+      <div class="feature-item">BẢO MẬT</div>
+    </div>
+
+    <div class="section-title">CHỌN PHƯƠNG THỨC NẠP TIỀN - HỆ THỐNG TỰ ĐỘNG XÁC NHẬN</div>
+
+    <div class="inputs-area">
+      <div class="payment-methods" id="paymentMethods">
+        <div class="method-btn active" data-method="quick-bank">NGÂN HÀNG</div>
+        <div class="method-btn" data-method="ewallet">VÍ ĐIỆN TỬ</div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Số tiền cần nạp (VNĐ):</label>
+        <input id="amount" class="amount-input" placeholder="Nhập số tiền" />
+      </div>
+
+      <div class="input-group" id="quickBankSection">
+        <label class="input-label">Chọn ngân hàng:</label>
+        <div id="quickBankGrid" class="bank-grid">
+          <div class="bank-item"><div class="bank-name">Đang tải ngân hàng...</div></div>
+        </div>
+      </div>
+
+      <div class="warning">Chỉ cộng tiền khi hệ thống xác nhận đã nhận được tiền.</div>
+
+      <button id="getInfoBtn" class="get-info-btn" disabled><span id="btnText">TẠO GIAO DỊCH</span></button>
+
+      <div class="small-muted" style="margin-top:8px;text-align:center;font-size:13px;color:#aaa">
+        Bạn chỉ có thể tạo 1 mã chuyển trong thời gian giao dịch còn hiệu lực. Muốn tạo mã khác, vui lòng <strong>đợi hết hạn</strong>.
+      </div>
+    </div>
+
+    <div class="info-section" id="infoSection">
+      <div class="info-title">THÔNG TIN CHUYỂN KHOẢN</div>
+
+      <div class="qr-code"><img id="qrImage" src="" alt="QR"></div>
+
+      <div class="info-item"><div class="info-label">Phương thức</div><div class="info-value" id="infoMethod">-</div></div>
+      <div class="info-item"><div class="info-label">Tên tài khoản</div><div class="info-value" id="infoName">-</div></div>
+      <div class="info-item"><div class="info-label">Số tài khoản</div><div class="info-value" id="infoAccountWrap"><span id="infoAccount">-</span> <button id="copyAccountBtn" class="copy-btn">📜</button></div></div>
+      <div class="info-item"><div class="info-label">Nội dung chuyển</div><div class="info-value" id="infoContentWrap"><span id="infoContent">-</span> <button id="copyContentBtn" class="copy-btn">📜</button></div></div>
+      <div class="info-item"><div class="info-label">Số tiền</div><div class="info-value" id="infoAmount">-</div></div>
+
+      <div class="timer">Hết hạn sau: <span id="countdown">15:00</span></div>
+
+      <button id="createNewBtn" title="Quay về trang gốc để tạo mã mới">TẠO MÃ MỚI</button>
+    </div>
+  </div>
+
+  <!-- Popup thông báo -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+      <div class="popup-icon">🎉</div>
+      <div class="popup-title" id="popupTitle">Thành Công!</div>
+      <div class="popup-message" id="popupMessage">Nạp tiền thành công!</div>
+      <button class="popup-close-btn" onclick="closePopup()">ĐÓNG</button>
+    </div>
+  </div>
+
+  <div id="offlineOverlay" style="display:none">
+    <div style="border:5px solid #00ff88;border-top:5px solid transparent;border-radius:50%;width:60px;height:60px;animation:spin 1s linear infinite"></div>
+    <div>Mất kết nối... Đang kết nối lại</div>
+  </div>
+
+  <script>
+  // ----- cấu hình -----
+  const OBF_BASE = '1UTN1oDdz9GasF2Yvx2LvoDc0RHa';
+  function decodeObf(s){ try { return atob(s.split('').reverse().join('')); } catch(e) { return ''; } }
+  const BASE_URL = decodeObf(OBF_BASE);
+  const WS_URL = `ws://localhost:5555/ws`;
+
+  // ----- trạng thái -----
+  let currentUserId = '';
+  let userBalance = 0;
+  let selectedMethod = 'quick-bank';
+  let selectedQuickBank = null;
+  let countdownInterval = null;
+  let currentTransactionData = null;
+  let isTransactionActive = false;
+  let ws = null;
+
+  // ----- WebSocket Connection -----
+  function connectWebSocket() {
+    try {
+      ws = new WebSocket(WS_URL);
+      
+      ws.onopen = function() {
+        console.log('🔗 WebSocket connected');
+        showToastLeft('Kết nối thành công!');
+        // Đăng ký user
+        ws.send(JSON.stringify({ type: 'register' }));
+      };
+      
+      ws.onmessage = function(event) {
+        try {
+          const data = JSON.parse(event.data);
+          console.log('📨 WebSocket message:', data);
+          
+          switch(data.type) {
+            case 'welcome':
+              currentUserId = data.userId;
+              document.getElementById('userId').textContent = `ID: ${data.userId}`;
+              break;
+              
+            case 'balance_update':
+              userBalance = data.balance;
+              updateBalanceDisplay();
+              showToastLeft(`Số dư cập nhật: ${formatCurrency(data.balance)}`);
+              break;
+              
+            case 'deposit_success':
+              showSuccessPopup(`Nạp tiền thành công!`, `Bạn đã nạp ${formatCurrency(data.amount)} VNĐ thành công.`);
+              userBalance = data.balance || userBalance;
+              updateBalanceDisplay();
+              break;
+              
+            case 'transaction_created':
+              showToastLeft('Giao dịch đã được tạo! Vui lòng chuyển khoản.');
+              break;
+              
+            case 'deposit_failed':
+              showToastLeft('Giao dịch thất bại!', 5000);
+              break;
+          }
+        } catch (e) {
+          console.error('Error parsing WebSocket message:', e);
+        }
+      };
+      
+      ws.onclose = function() {
+        console.log('🔗 WebSocket disconnected');
+        showToastLeft('Mất kết nối, đang kết nối lại...', 3000);
+        // Tự động kết nối lại sau 3 giây
+        setTimeout(connectWebSocket, 3000);
+      };
+      
+      ws.onerror = function(error) {
+        console.error('WebSocket error:', error);
+      };
+      
+    } catch (error) {
+      console.error('WebSocket connection failed:', error);
+    }
+  }
+
+  // ----- Popup functions -----
+  function showSuccessPopup(title, message) {
+    document.getElementById('popupTitle').textContent = title;
+    document.getElementById('popupMessage').textContent = message;
+    document.getElementById('popupOverlay').classList.add('active');
+  }
+
+  function closePopup() {
+    document.getElementById('popupOverlay').classList.remove('active');
+  }
+
+  // ----- Balance functions -----
+  function updateBalanceDisplay() {
+    document.getElementById('userBalance').textContent = `Số dư: ${formatCurrency(userBalance)} VND`;
+  }
+
+  async function checkBalance() {
+    try {
+      const response = await fetch(`${BASE_URL}/api/balance`);
+      const data = await response.json();
+      
+      if (data.success) {
+        userBalance = data.data.balance;
+        currentUserId = data.data.userId;
+        document.getElementById('userId').textContent = `ID: ${currentUserId}`;
+        updateBalanceDisplay();
+      }
+    } catch (error) {
+      console.error('Error checking balance:', error);
+    }
+  }
+
+  // ----- Các hàm cũ giữ nguyên -----
+  function showToastLeft(msg, duration=1800){
+    const t = document.createElement('div');
+    t.className = 'toast-left';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(()=> t.style.opacity = '1');
+    setTimeout(()=> { t.style.opacity='0'; setTimeout(()=> t.remove(), 300); }, duration);
+  }
+
+  function formatAmount(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function parseAmount(s){ return parseInt((s||'').toString().replace(/,/g,'')) || 0; }
+  function formatCurrency(amount){ return new Intl.NumberFormat('vi-VN').format(amount); }
+
+  async function loadBanks(){
+    const grid = document.getElementById('quickBankGrid');
+    grid.innerHTML = '<div class="bank-item"><div class="bank-name">Đang tải ngân hàng...</div></div>';
+    try {
+      const res = await fetch(`${BASE_URL}/api/banks`);
+      const data = await res.json();
+      const list = data.Orders?.List || data.list || [];
+      grid.innerHTML = '';
+      
+      list.forEach(b => {
+        const div = document.createElement('div');
+        div.className = 'bank-item';
+        div.setAttribute('data-bank', b.code || '');
+        const logoUrl = `https://img.vietqr.io/image/${b.code}.png`;
+        div.innerHTML = `
+          <div class="bank-meta">
+            <img src="${logoUrl}" alt="${b.code}" onerror="this.style.display='none'">
+            <div style="font-weight:700">${b.shortName || b.code}</div>
+          </div>
+          <div style="font-size:11px;color:#aaa">${b.name || ''}</div>
+        `;
+        div.onclick = () => {
+          document.querySelectorAll('.bank-item').forEach(x=>x.classList.remove('active'));
+          div.classList.add('active');
+          selectedQuickBank = b.code;
+          updateGetInfoButton();
+        };
+        grid.appendChild(div);
+      });
+      
+      const first = grid.querySelector('.bank-item');
+      if(first) first.click();
+    } catch (e) {
+      console.warn('Lỗi tải bank list', e);
+      // Fallback code...
+    }
+  }
+
+  function updateGetInfoButton(){
+    const amount = parseAmount(document.getElementById('amount').value || '');
+    const hasBank = selectedMethod === 'quick-bank' ? !!selectedQuickBank : true;
+    const btn = document.getElementById('getInfoBtn');
+    btn.disabled = !(amount >= 10000 && hasBank && !isTransactionActive);
+  }
+
+  function cropWhiteBorderFromImageSrc(src, cb){
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = function(){
+      try {
+        const w = img.naturalWidth, h = img.naturalHeight;
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img,0,0);
+        const data = ctx.getImageData(0,0,w,h).data;
+        let minX=w, minY=h, maxX=0, maxY=0;
+        const threshold = 250;
+        for(let y=0;y<h;y++){
+          for(let x=0;x<w;x++){
+            const idx = (y*w + x)*4;
+            const r = data[idx], g = data[idx+1], b = data[idx+2], a=data[idx+3];
+            if(a>20 && !(r>threshold && g>threshold && b>threshold)){
+              if(x<minX) minX=x;
+              if(y<minY) minY=y;
+              if(x>maxX) maxX=x;
+              if(y>maxY) maxY=y;
+            }
+          }
+        }
+        if(maxX <= minX || maxY <= minY){
+          cb(src);
+          return;
+        }
+        const pad = 6;
+        minX = Math.max(0, minX - pad);
+        minY = Math.max(0, minY - pad);
+        maxX = Math.min(w, maxX + pad);
+        maxY = Math.min(h, maxY + pad);
+        const cw = maxX - minX, ch = maxY - minY;
+        const c2 = document.createElement('canvas');
+        c2.width = cw; c2.height = ch;
+        const ctx2 = c2.getContext('2d');
+        ctx2.drawImage(img, minX, minY, cw, ch, 0, 0, cw, ch);
+        const result = c2.toDataURL('image/png');
+        cb(result);
+      } catch(err){
+        console.warn('Crop failed:', err);
+        cb(src);
+      }
+    };
+    img.onerror = function(){ cb(src); };
+    img.src = src + (src.indexOf('?') === -1 ? '?_t=' + Date.now() : '&_t=' + Date.now());
+  }
+
+  function renderTransaction(data){
+    if(!data) return;
+    const qrImgEl = document.getElementById('qrImage');
+    if(data.vietqr){
+      cropWhiteBorderFromImageSrc(data.vietqr, function(croppedSrc){
+        qrImgEl.src = croppedSrc;
+      });
+    } else if(data.info && data.info.qrUrl){
+      cropWhiteBorderFromImageSrc(data.info.qrUrl, function(croppedSrc){
+        qrImgEl.src = croppedSrc;
+      });
+    } else {
+      qrImgEl.src = '';
+    }
+
+    document.getElementById('infoMethod').textContent = selectedMethod === 'quick-bank' ? ('Ngân hàng ' + (selectedQuickBank || (data.info && data.info.bankCode) || '-')) : 'Ví MOMO';
+    document.getElementById('infoName').textContent = data.info?.phoneName || data.info?.accountName || '-';
+    document.getElementById('infoAccount').textContent = data.info?.phoneNum || data.info?.accountNumber || '-';
+    document.getElementById('infoContent').textContent = data.info?.code || data.info?.id || '-';
+    document.getElementById('infoAmount').textContent = (data.amount ? formatAmount(data.amount) : '-') + ' VNĐ';
+    document.getElementById('infoSection').style.display = 'block';
+    document.getElementById('appContainer').classList.add('full-mode');
+    isTransactionActive = true;
+    
+    sessionStorage.setItem('currentTransactionData', JSON.stringify(data));
+    sessionStorage.setItem('transactionActive', '1');
+    updateGetInfoButton();
+  }
+
+  async function createDeposit(amount){
+    if(isTransactionActive) { showToastLeft('Đang có giao dịch tồn tại. Vui lòng đợi hết hạn.'); return; }
+    const btn = document.getElementById('getInfoBtn');
+    btn.disabled = true; document.getElementById('btnText').textContent = 'ĐANG TẠO...';
+    try {
+      let info = null;
+      if(selectedMethod === 'quick-bank'){
+        const res = await fetch(`${BASE_URL}/api/quick-bank/deposit`, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ bankCode: selectedQuickBank, amount, userId: currentUserId })
+        });
+        const data = await res.json();
+        info = data.Orders?.List || data || {};
+        if(Array.isArray(info)) info = info[0] || info;
+        const vietqr = `https://img.vietqr.io/image/${selectedQuickBank}-${info?.phoneNum||info?.accountNumber}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(info?.code||'')}&accountName=${encodeURIComponent(info?.phoneName||info?.accountName||'')}`;
+        currentTransactionData = { vietqr, info, amount };
+      } else {
+        const res = await fetch(`${BASE_URL}/api/ewallet/deposit`, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ amount, userId: currentUserId, provider: 'MOMO' })
+        });
+        const data = await res.json();
+        info = data;
+        const vietqr = `https://img.vietqr.io/image/MOMO-${info?.phoneNum||info?.accountNumber}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(info?.code||'')}`;
+        currentTransactionData = { vietqr, info, amount };
+      }
+
+      if(!currentTransactionData.info) currentTransactionData.info = {};
+      if(!currentTransactionData.info.expiresAt){
+        currentTransactionData.info.expiresAt = new Date(Date.now() + 15*60*1000).toISOString();
+      }
+
+      sessionStorage.setItem('lastCreateTs', String(Date.now()));
+      renderTransaction(currentTransactionData);
+      const remaining = Math.max(0, Math.floor((new Date(currentTransactionData.info.expiresAt) - new Date())/1000));
+      startCountdown(remaining > 0 ? remaining : 900);
+      showToastLeft('Đã tạo QR thành công!');
+    } catch (err) {
+      console.error(err);
+      showToastLeft('Lỗi tạo giao dịch. Vui lòng thử lại.');
+      btn.disabled = false;
+    } finally {
+      document.getElementById('btnText').textContent = 'TẠO GIAO DỊCH';
+      updateGetInfoButton();
+    }
+  }
+
+  function startCountdown(seconds){
+    const el = document.getElementById('countdown');
+    let t = Math.max(0, Math.floor(seconds));
+    el.textContent = `${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+    clearInterval(countdownInterval);
+    countdownInterval = setInterval(()=>{
+      t--;
+      if(t < 0){
+        clearInterval(countdownInterval);
+        el.textContent = 'HẾT HẠN';
+        onTransactionExpired();
+        return;
+      }
+      el.textContent = `${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+    }, 1000);
+  }
+
+  function onTransactionExpired(){
+    isTransactionActive = false;
+    sessionStorage.removeItem('currentTransactionData');
+    sessionStorage.removeItem('transactionActive');
+    const btn = document.getElementById('createNewBtn');
+    btn.style.display = 'block';
+    showToastLeft('Giao dịch đã hết hạn. Bấm TẠO MÃ MỚI để quay trang gốc.');
+    updateGetInfoButton();
+  }
+
+  // ----- Event Listeners -----
+  document.getElementById('copyAccountBtn').addEventListener('click', () => {
+    const txt = document.getElementById('infoAccount').textContent || '';
+    if(!txt) return showToastLeft('Không có số tài khoản để copy');
+    navigator.clipboard.writeText(txt).then(()=> showToastLeft('Đã copy số tài khoản!'));
+  });
+  
+  document.getElementById('copyContentBtn').addEventListener('click', () => {
+    const txt = document.getElementById('infoContent').textContent || '';
+    if(!txt) return showToastLeft('Không có nội dung để copy');
+    navigator.clipboard.writeText(txt).then(()=> showToastLeft('Đã copy nội dung!'));
+  });
+
+  document.getElementById('createNewBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('currentTransactionData');
+    sessionStorage.removeItem('transactionActive');
+    window.location.href = '/';
+  });
+
+  document.querySelectorAll('.method-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedMethod = btn.dataset.method;
+      document.getElementById('quickBankSection').style.display = selectedMethod === 'quick-bank' ? 'block' : 'none';
+      updateGetInfoButton();
+    });
+  });
+
+  document.getElementById('amount').addEventListener('input', (e) => {
+    const raw = e.target.value.replace(/,/g,'').replace(/[^0-9]/g,'');
+    e.target.value = raw ? formatAmount(raw) : '';
+    updateGetInfoButton();
+  });
+
+  document.getElementById('getInfoBtn').addEventListener('click', () => {
+    if(isTransactionActive) return showToastLeft('Đang có giao dịch tồn tại. Vui lòng đợi hết hạn.');
+    const amount = parseAmount(document.getElementById('amount').value || '');
+    if(amount < 10000) return showToastLeft('Số tiền tối thiểu 10.000 VNĐ');
+    if(selectedMethod === 'quick-bank' && !selectedQuickBank) return showToastLeft('Vui lòng chọn ngân hàng');
+    createDeposit(amount);
+  });
+
+  function restoreTransactionState(){
+    const stored = sessionStorage.getItem('currentTransactionData');
+    if(!stored) return;
+    try {
+      const obj = JSON.parse(stored);
+      currentTransactionData = obj;
+      if(obj && (obj.info?.phoneNum || obj.info?.accountNumber)){
+        renderTransaction(obj);
+        const remaining = Math.max(0, Math.floor((new Date(obj.info.expiresAt || Date.now() + 15*60*1000) - new Date())/1000));
+        if(remaining > 0) startCountdown(remaining);
+        else onTransactionExpired();
+      } else {
+        sessionStorage.removeItem('currentTransactionData');
+      }
+    } catch(e){ console.error('restore error', e); sessionStorage.removeItem('currentTransactionData'); }
+  }
+
+  // ----- Khởi tạo -----
+  async function init() {
+    await checkBalance(); // Check balance lần đầu
+    loadBanks();
+    restoreTransactionState();
+    connectWebSocket(); // Kết nối WebSocket
+    
+    // Check balance mỗi 30 giây (bổ sung thêm)
+    setInterval(checkBalance, 30000);
+  }
+
+  init();
+
+  window.addEventListener('beforeunload', ()=> sessionStorage.setItem('scrollPos', String(window.scrollY || 0)));
+  window.addEventListener('load', ()=>{
+    const sp = sessionStorage.getItem('scrollPos'); 
+    if(sp) window.scrollTo(0, parseInt(sp,10));
+    if(sessionStorage.getItem('transactionActive')){ 
+      isTransactionActive = true; 
+      updateGetInfoButton(); 
+    }
+  });
+  </script>
+</body>
+</html>
